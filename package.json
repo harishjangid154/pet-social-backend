@@ -1,0 +1,22 @@
+{
+  "name": "pet-social-backend",
+  "version": "1.0.0",
+  "description": "Pet Social app backend with mongoDB",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npx nodemon index.js"
+  },
+  "author": "Harish Kumar Jangir",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "monk": "^7.3.3",
+    "multer": "^1.4.2",
+    "yup": "^0.32.9"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  }
+}
