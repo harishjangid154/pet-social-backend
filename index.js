@@ -11,7 +11,17 @@ const userFileStorage = multer.diskStorage({
   },
 });
 
+const postFileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "./postImages");
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + "---" + file.originalname);
+  },
+});
+
 const userUploadEngine = multer({ storage: userFileStorage });
+const postUploadEngine = multer({ storage: postFileStorage });
 
 const { login, signup, getUser } = require("./auth/authFunctions");
 const {
@@ -60,7 +70,9 @@ app.post(
 app.post("/api/post", putPost);
 app.get("/api/post", getPosts);
 app.get("/api/getpost", getSinglePost);
-app.post("/api/postimage", uploadPostImage);
+app.post("/api/postimage", postUploadEngine, async (req, res) => {
+  console.log("uploaded");
+});
 
 // images
 
