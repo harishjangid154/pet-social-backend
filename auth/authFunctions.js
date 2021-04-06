@@ -10,39 +10,49 @@ const login = async (req, res) => {
 
   const schema = yup.object().shape({
     email: yup.string().email(),
-    password: yup.string().min(1),
+    password: yup.string().min(8).max(16),
   });
 
-  if (!(await schema.isValid({ email: user.email }))) {
+  if (
+    !(await schema.isValid({ email: user.email })) ||
+    user.email.length === 0
+  ) {
     errors.email = "Enter a valid email";
   }
   if (!(await schema.isValid({ password: user.password }))) {
-    errors.password = "Password must be 1 char long";
+    errors.password = "Invalid Credentials";
+  }
+  if (Object.keys(errors).length != 0) {
+    return res.status(400).json({ errors: errors });
   }
 
   await users.find({ email: user.email }).then((doc) => {
     console.log(doc);
     if (doc.length === 0) {
-      errors.err = "User not regestered";
+      errors.user = "User not regestered";
     } else {
       if (doc[0].password != user.password) {
         errors.password = "Invalid Credentials";
       } else {
-        user = doc[0];
+        return res.status(200).json({ user: doc[0] });
       }
     }
   });
 
   if (Object.keys(errors).length != 0) {
-    res.status(401).json(errors);
+    return res.status(400).json({ errors: errors });
   }
 
-  res.status(200).json(user);
+  return res.status(200).json(user);
 };
 
 const signup = async (req, res) => {
-  const defaultImage = "localhost:5000/userImages/default.jpg";
   const errors = {};
+  if (Object.keys(req.body).length === 0) {
+    errors.body = "Empty body";
+    return res.status(400).json({ errors });
+  }
+  const defaultImage = "http://localhost:5000/userImages/default.jpg";
   const schema = yup.object().shape({
     email: yup.string().email(),
     password: yup
@@ -111,7 +121,7 @@ const signup = async (req, res) => {
     await users
       .insert(user)
       .then((doc) => {
-        console.log(doc);
+        return res.status(200).json({ user: doc });
       })
       .catch((err) => {
         console.log(err);
