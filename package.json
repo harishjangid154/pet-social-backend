@@ -4,7 +4,7 @@
   "description": "Pet Social app backend with mongoDB",
   "main": "index.js",
   "scripts": {
-    "dev": "npx nodemon index.js"
+    "start": "nodemon --exec babel-node server.js"
   },
   "author": "Harish Kumar Jangir",
   "license": "ISC",
@@ -17,6 +17,9 @@
     "yup": "^0.32.9"
   },
   "devDependencies": {
+    "@babel/core": "^7.13.14",
+    "@babel/node": "^7.13.13",
+    "@babel/preset-env": "^7.13.12",
     "nodemon": "^2.0.7"
   }
 }
