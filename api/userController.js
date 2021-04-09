@@ -1,12 +1,28 @@
 // const userModel = require("../dbSchema/userModel");
 import userModel from "../dbSchema/userModel";
+import jwt from "jsonwebtoken";
 
 const signup = (req, res) => {
   const user = new userModel(req.body);
   user
     .save()
     .then(() => {
-      return res.status(200).json(user);
+      let token;
+      const payload = {
+        userName: user.userName,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        createdOn: user.createdOn,
+        userImage: user.userImage,
+        _id: user._id,
+      };
+      try {
+        token = jwt.sign(payload, "ppl");
+      } catch (error) {
+        console.log(error);
+      }
+      return res.status(200).json({ token: token });
     })
     .catch((err) => {
       return res.status(400).json(err);
@@ -18,13 +34,28 @@ const login = (req, res) => {
     .findOne({ email: req.body.email })
     .then((data) => {
       if (data.password === req.body.password) {
-        return res.status(200).json({ user: data });
+        const payload = {
+          userName: data.userName,
+          email: data.email,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          createdOn: data.createdOn,
+          userImage: data.userImage,
+          _id: data._id,
+        };
+        let token;
+        try {
+          token = jwt.sign(payload, "ppl");
+        } catch (error) {
+          console.log(error);
+        }
+        return res.status(200).json({ token: token });
       } else {
-        return res.status(400).json({ error: "Invalid Credentials" });
+        return res.status(400).json({ errors: "Invalid Credentials" });
       }
     })
     .catch((err) => {
-      return res.status(500).json(err);
+      return res.status(400).json({ errors: "Invalid Credentials" });
     });
   console.log("called");
 };

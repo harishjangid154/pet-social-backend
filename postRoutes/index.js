@@ -4,7 +4,7 @@ import { uploadPost, getPosts, getSinglePost } from "../api/postController";
 const router = Router();
 
 router.post("/", uploadPost);
-router.get("/:username", getPosts);
+router.post("/posts", getPosts);
 router.get("/:postId", getSinglePost);
 
 export default router;

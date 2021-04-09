@@ -2,7 +2,7 @@ import postModel from "../dbSchema/postModel";
 
 const uploadPost = (req, res) => {
   if (!req.body.userId) {
-    return res.status(400).json("Bad Request");
+    return res.status(400).json({ errors: "You need to login" });
   }
   const post = new postModel(req.body);
 
@@ -17,7 +17,7 @@ const uploadPost = (req, res) => {
 };
 
 const getPosts = (req, res) => {
-  if (!req.params.username) {
+  if (!req.body.user) {
     return res.status(400).json("Bad Request");
   }
   postModel
@@ -29,7 +29,8 @@ const getPosts = (req, res) => {
       return res.status(200).json(data);
     })
     .catch((err) => {
-      res.status(500).json("server Error");
+      console.log(err);
+      res.status(500).json({ errors: "server error" });
     });
 };
 
