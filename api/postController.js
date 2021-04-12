@@ -1,9 +1,6 @@
 import postModel from "../dbSchema/postModel";
 
 const uploadPost = (req, res) => {
-  if (!req.body.userId) {
-    return res.status(400).json({ errors: "You need to login" });
-  }
   const post = new postModel(req.body);
 
   post
@@ -17,9 +14,6 @@ const uploadPost = (req, res) => {
 };
 
 const getPosts = (req, res) => {
-  if (!req.body.user) {
-    return res.status(400).json("Bad Request");
-  }
   postModel
     .find()
     .skip(req.body.skip)
@@ -35,10 +29,6 @@ const getPosts = (req, res) => {
 };
 
 const getSinglePost = (req, res) => {
-  if (!req.body.userId) {
-    return res.status(400).json("Bad Request");
-  }
-
   postModel
     .findOne({ _id: req.params.postId })
     .then((data) => {

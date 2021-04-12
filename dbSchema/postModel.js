@@ -13,6 +13,10 @@ const postModel = new Schema({
   unlikeCount: { type: Number, default: 0 },
   commentCount: { type: Number, default: 0 },
   category: { type: String, default: "others" },
+  whoLiked: { type: Array, default: [] },
+  whoUnLiked: { type: Array, default: [] },
+  whoCommented: { type: Array, default: [] },
+  comments: { type: Array, default: [] },
 });
 
 export default model("posts", postModel);
