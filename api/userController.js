@@ -19,6 +19,7 @@ const signup = (req, res) => {
       };
       try {
         token = jwt.sign(payload, "ppl");
+        console.log(token);
       } catch (error) {
         console.log(error);
       }

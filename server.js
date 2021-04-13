@@ -6,6 +6,11 @@ import postRoutes from "./postRoutes";
 import "dotenv/config";
 import { connect } from "mongoose";
 import likeUnlikeRoutes from "./likeUnlikeRoutes";
+import categoryRoutes from "./categoryRoutes";
+import commentRoutes from "./commentRoutes";
+import morgan from "morgan";
+import fs from "fs";
+import path from "path";
 
 connect(process.env.DB_URI, {
   useNewUrlParser: true,
@@ -13,10 +18,14 @@ connect(process.env.DB_URI, {
 }).then(() => {
   console.log("Connected to database");
 });
+const logFile = fs.createWriteStream(path.join(__dirname, "logFile.log"), {
+  flags: "a",
+});
 const app = express();
 app.use(express.json());
 app.use(require("body-parser").json());
 app.use(cors());
+app.use(morgan("dev", { stream: logFile }));
 
 // user authantication routes
 // public routes
@@ -35,6 +44,9 @@ app.use((req, res, next) => {
 });
 app.use("/post", postRoutes);
 app.use("/like", likeUnlikeRoutes);
+
+app.use("/category", categoryRoutes);
+app.use("/comment", commentRoutes);
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
