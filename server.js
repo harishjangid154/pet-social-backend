@@ -11,6 +11,8 @@ import commentRoutes from "./commentRoutes";
 import morgan from "morgan";
 import fs from "fs";
 import path from "path";
+import cookieSession from "cookie-session";
+import cookieParser from "cookie-parser";
 
 connect(process.env.DB_URI, {
   useNewUrlParser: true,
@@ -22,13 +24,24 @@ const logFile = fs.createWriteStream(path.join(__dirname, "logFile.log"), {
   flags: "a",
 });
 const app = express();
+app.use(cookieParser());
 app.use(express.json());
 app.use(require("body-parser").json());
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  })
+);
 app.use(morgan("dev", { stream: logFile }));
 
 // user authantication routes
 // public routes
+app.get("/", (req, res) => {
+  res.cookie("jwtToken", "this is a example");
+  console.log(req);
+  return res.json({ ok: "ok" });
+});
 app.use("/auth", userRoutes);
 // images
 app.use("/upload", uploadRoutes);

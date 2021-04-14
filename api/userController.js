@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 
 const signup = (req, res) => {
   const user = new userModel(req.body);
+  console.log(user);
   user
     .save()
     .then(() => {
@@ -26,6 +27,7 @@ const signup = (req, res) => {
       return res.status(200).json({ token: token });
     })
     .catch((err) => {
+      console.log(err);
       return res.status(400).json(err);
     });
 };
@@ -34,7 +36,12 @@ const login = (req, res) => {
   userModel
     .findOne({ email: req.body.email })
     .then((data) => {
+      console.log(data.password === req.body.password);
       if (data.password === req.body.password) {
+        // req.logIn(data, (err) => {
+        //   if (err) console.log(err);
+        //   res.send("authenticated");
+        // });
         const payload = {
           userName: data.userName,
           email: data.email,
