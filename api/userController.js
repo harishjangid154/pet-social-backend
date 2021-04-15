@@ -25,6 +25,7 @@ const signup = (req, res) => {
         console.log(error);
       }
       return res.status(200).json({ token: token });
+      // return res.cookie("jwt-token", token, {maxAge: 24*60*60*1000})
     })
     .catch((err) => {
       console.log(err);
@@ -58,6 +59,7 @@ const login = (req, res) => {
           console.log(error);
         }
         return res.status(200).json({ token: token });
+        // return res.cookie("jwt-token", token, {maxAge: 24*60*60*1000})
       } else {
         return res.status(400).json({ errors: "Invalid Credentials" });
       }
