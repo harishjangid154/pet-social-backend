@@ -1,27 +1,4 @@
-// const multer = require("multer");
-
 import multer from "multer";
-
-// const userFileStorage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     cb(null, "../userImages");
-//   },
-//   filename: (req, file, cb) => {
-//     cb(null, Date.now() + "--" + file.originalname);
-//   },
-// });
-
-// const postFileStorage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     cb(null, "../postImages");
-//   },
-//   filename: (req, file, cb) => {
-//     cb(null, Date.now() + "---" + file.originalname);
-//   },
-// });
-
-// const userUploadEngine = multer({ storage: userFileStorage });
-// const postUploadEngine = multer({ storage: postFileStorage });
 
 const imageStorage = multer.diskStorage({
   destination: (req, file, cb) => {

@@ -19,7 +19,7 @@ const getPosts = (req, res) => {
     .skip(req.body.skip)
     .limit(req.body.limit)
     .then((data) => {
-      console.log(data);
+      // console.log(data);
       return res.status(200).json(data);
     })
     .catch((err) => {

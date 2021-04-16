@@ -11,12 +11,8 @@ import commentRoutes from "./commentRoutes";
 import morgan from "morgan";
 import fs from "fs";
 import path from "path";
-import cookieSession from "cookie-session";
 import cookieParser from "cookie-parser";
-import passport from "passport";
-import initializePassport from "./passport/passport-config";
-import session from "express-session";
-import userModel from "./dbSchema/userModel";
+import jwt from "jsonwebtoken";
 
 //----------------------------------------------END OF IMPORT-----------------------------------------------------
 
@@ -39,29 +35,16 @@ app.use(
   })
 );
 
-// app.use(cors());
 app.use(morgan("dev", { stream: logFile }));
-app.use(
-  cookieSession({
-    maxAge: 10 * 1000,
-    keys: ["harish"],
-  })
-);
-// app.use(passport.initialize());
-// app.use(passport.session());
-// app.use(
-//   session({
-//     secret: "harish",
-//     resave: true,
-//     saveUninitialized: true,
-//   })
-// );
 
-app.use(cookieParser("harish"));
-
-// initializePassport(passport);
+app.use(cookieParser());
 
 //----------------------------------------------END OF MIDDLEWARES-----------------------------------------------------
+
+/* app.get("/", (req, res) => {
+  res.cookie("harish", "test", { maxAge: 2 * 1000 });
+  res.send("done");
+}); */
 
 // user authantication routes
 // public routes
@@ -72,18 +55,20 @@ app.use("/upload", uploadRoutes);
 // authenticated routes
 // middleware to check that req has user or not
 const chekAuth = (req, res, next) => {
-  console.log(req.body);
-  if (!req.body.userId) {
+  const userToken = req.cookies["jwt-token"];
+  const user = jwt.decode(userToken);
+  if (!user._id) {
     res.status(400).json({ errors: "Bad Requst" });
   } else {
+    req.body.userId = user._id;
+    console.log(req.body);
     next();
   }
 };
 app.use("/post", chekAuth, postRoutes);
 app.use("/like", chekAuth, likeUnlikeRoutes);
-
-app.use("/category", categoryRoutes);
-app.use("/comment", commentRoutes);
+app.use("/category", chekAuth, categoryRoutes);
+app.use("/comment", chekAuth, commentRoutes);
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => {

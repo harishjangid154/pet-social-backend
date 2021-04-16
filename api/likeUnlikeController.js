@@ -1,117 +1,73 @@
-import { checkout } from "../userRoutes";
-
 const { default: postModel } = require("../dbSchema/postModel");
 
-const addlike = (req, res) => {
-  postModel.findOne({ _id: req.params.postId }).then((doc) => {
-    // const has = doc.whoLiked.filter((like) => like === req.body.userId);
-    // console.log(has);
-    // if (has.length != 0) {
-    //   return res.status(200).json({ liked: "Liked" });
-    // }
-    const likes = doc.likeCount + 1;
-    console.log(likes);
-    const likeArr = [...doc.whoLiked, req.body.userId];
-    postModel
-      .findOneAndUpdate(
-        { _id: req.params.postId },
-        { likeCount: likes, whoLiked: likeArr },
-        { new: true },
-        (err, docs) => {
-          if (err) {
-            console.log("Cann't find doc :- ", err);
-          } else {
-            console.log("Liked :-  ", docs);
-            return res.status(200).json({ ok: "ok" });
-          }
-        }
-      )
-      .catch((err) => {
-        console.log(err);
-      });
-  });
-  console.log("Liked :- ", req.params.postId);
-};
+const add = (req, res) => {
+  let added = false;
+  postModel
+    .findById(req.params.postId)
+    .then((post) => {
+      let whoLiked, likeCount;
+      if (post.whoLiked.includes(req.body.userId)) {
+        whoLiked = post.whoLiked.filter((id) => id !== req.body.userId);
+        console.log(whoLiked);
+        likeCount = post.likeCount - 1;
+        added = false;
+      } else {
+        whoLiked = [...post.whoLiked, req.body.userId];
+        likeCount = post.likeCount + 1;
+        added = true;
+      }
+      console.log("added ", added);
 
-const removeLike = (req, res) => {
-  console.log("like Removed");
-  const userId = req.body.userId;
-  postModel.findOne({ _id: req.params.postId }).then((doc) => {
-    const likes = doc.likeCount - 1;
-    console.log(likes);
-    const likeArr = doc.whoLiked.filter((id) => id != userId);
-    postModel
-      .findOneAndUpdate(
-        req.params.postId,
-        { likeCount: likes, whoLiked: likeArr },
-        { new: true },
-        (err, docs) => {
-          if (err) {
-            console.log("Cann't find doc :- ", err);
-          } else {
-            console.log("Like Removed :-  ", docs);
+      postModel
+        .findByIdAndUpdate(
+          req.params.postId,
+          { likeCount: likeCount, whoLiked: whoLiked },
+          { new: true },
+          (err, post) => {
+            if (err) console.log(err);
+            console.log(post);
           }
-        }
-      )
-      .catch((err) => {
-        console.log(err);
-      });
-  });
-  console.log("Liked :- ", req.params.postId);
-  res.status(200).json({ ok: "ok" });
+        )
+        .catch((err) => console.log(err));
+      if (added) return res.status(200).json("added");
+      else return res.status(200).json("removed");
+    })
+    .catch((err) => console.log(err));
+
+  console.log("exit ", added);
 };
 
 const addUnlike = (req, res) => {
-  postModel.findOne({ _id: req.params.postId }).then((doc) => {
-    const unLikes = doc.unlikeCount + 1;
-    console.log(unLikes);
-    const unLikeArr = [...doc.whoUnLiked, req.body.userId];
-    postModel
-      .findOneAndUpdate(
-        { _id: req.params.postId },
-        { unlikeCount: unLikes, whoUnLiked: unLikeArr },
+  let added = false;
+  postModel
+    .findById(req.params.postId)
+    .then((post) => {
+      let whoUnLiked, unlikeCount;
+      if (post.whoUnLiked.includes(req.body.userId)) {
+        whoUnLiked = post.whoUnLiked.filter((id) => id !== req.body.userId);
+        added = false;
+        unlikeCount = post.unlikeCount - 1;
+      } else {
+        whoUnLiked = [...post.whoUnLiked, req.body.userId];
+        added = true;
+        unlikeCount = post.unlikeCount + 1;
+      }
+      console.log(whoUnLiked, unlikeCount, added);
+
+      postModel.findByIdAndUpdate(
+        req.params.postId,
+        { unlikeCount: unlikeCount, whoUnLiked: whoUnLiked },
         { new: true },
-        (err, docs) => {
-          if (err) {
-            console.log("Cann't find doc :- ", err);
-          } else {
-            console.log("unliked :-  ", docs);
-          }
+        (err, post) => {
+          if (err) console.log(err);
+          console.log(post);
         }
-      )
-      .catch((err) => {
-        console.log(err);
-      });
-  });
-  console.log("Unliked :- ", req.params.postId);
-  res.status(200).json({ ok: "ok" });
+      );
+
+      if (added) return res.status(200).json("added");
+      else return res.status(200).json("removed");
+    })
+    .catch((err) => console.log(err));
 };
 
-const removeUnlike = (req, res) => {
-  const userId = req.body.userId;
-  postModel.findOne({ _id: req.params.postId }).then((doc) => {
-    const unLikes = doc.unlikeCount - 1;
-    console.log(unLikes);
-    const unLikeArr = doc.whoUnLiked.filter(id != userId);
-    postModel
-      .findOneAndUpdate(
-        { _id: req.params.postId },
-        { unlikeCount: unLikes, whoUnLiked: unLikeArr },
-        { new: true },
-        (err, docs) => {
-          if (err) {
-            console.log("Cann't find doc :- ", err);
-          } else {
-            console.log("Liked :-  ", docs);
-          }
-        }
-      )
-      .catch((err) => {
-        console.log(err);
-      });
-  });
-  console.log("Unliked :- ", req.params.postId);
-  res.status(200).json({ ok: "ok" });
-};
-
-export { addlike, removeLike, addUnlike, removeUnlike };
+export { addUnlike, add };

@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 
 const commentModel = new Schema({
-  userId: { type: Schema.Types.ObjectId, ref: "users" },
+  user: { type: Schema.Types.ObjectId, ref: "users" },
   text: { type: String, required: true },
 });
 

@@ -2,16 +2,14 @@ import commentModel from "../dbSchema/commentModel";
 import postModel from "../dbSchema/postModel";
 
 const addComment = (req, res) => {
-  console.log("Loged");
   const newComment = new commentModel({
-    userId: req.body.userId,
+    user: req.body.userId,
     text: req.body.text,
   });
-  // console.log(newComment);
   newComment
     .save()
     .then(() => {
-      console.log("saved");
+      // console.log("saved");
       postModel.findOne({ _id: req.body.postId }).then((post) => {
         const comments = [...post.comments, newComment._id];
         const whoCommented = [...post.whoCommented, req.body.userId];
@@ -37,6 +35,7 @@ const getComment = (req, res) => {
   const commentId = req.params.commentId;
   commentModel
     .find({ _id: commentId })
+    .populate("user")
     .then((doc) => {
       console.log(doc);
       return res.status(200).json(doc);
